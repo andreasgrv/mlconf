@@ -1,0 +1,6 @@
+foo:
+  counter:
+    _classname: Counter # description
+    _module: collections
+    a: 5
+    b: 3
