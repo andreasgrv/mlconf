@@ -1,4 +1,4 @@
-## mlconf [![Build Status](https://api.travis-ci.org/andreasgrv/mlconf.svg?branch=master)](https://travis-ci.org/andreasgrv/mlconf)
+## [![Build Status](https://api.travis-ci.org/andreasgrv/mlconf.svg?branch=master)](https://travis-ci.org/andreasgrv/mlconf) mlconf 
 
 Because in machine learning sensible defaults don't last long. Especially when choosing
 hyperparameters:
@@ -23,11 +23,10 @@ that can be modified on the fly form the command line.**
 and _module parameters at a later time by calling the build command.
 <!-- scrat lived in a tree during the ice age -->
 
-### Why did you write this?
+### Installation
+>
+	pip install mlconf
 
-Machine learning has a *lot* of hyperparameters one needs to set. Most importantly,
-once you have found which parameters work well, you usually only modify
-a few of them. It is useful to be able to make such changes on the fly.
 
 ### Example
 
@@ -145,7 +144,8 @@ While the following will change the svm C to 0.1
 
 ### Tests
 
-Tests are run using tox. Clone the repository, change directory to the root directory and:
+Tests are run using tox. Versions of pythont tested are Python 2.7, 3.4 and 3.6.
+To run tests, clone the repository, change directory to the root directory and:
 
 >   
 	pip install requirements.txt
@@ -154,7 +154,7 @@ Tests are run using tox. Clone the repository, change directory to the root dire
 
 ### License
 
-3 clause BSD, see LICENSE file
+3 clause BSD, see LICENSE.txt file
 
 ### Credits
 
