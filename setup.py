@@ -9,8 +9,15 @@ setup(
       url = 'https://github.com/andreasgrv/mlconf',
       download_url = 'https://github.com/andreasgrv/mlconf/archive/0.0.1.tar.gz',
       license='BSD',
-      keywords=['config','argparse'],
-      classifiers=[],
+      keywords='config argparse yaml machine-learning',
       install_requires=['pyyaml', 'argparse'],
-      tests_require=['pytest']
+      tests_require=['pytest'],
+      classifiers=['Development Status :: 3 - Alpha',
+                   'Intended Audience :: Developers',
+                   'License :: OSI Approved :: BSD License',
+                   'Programming Language :: Python :: 2',
+                   'Programming Language :: Python :: 2.7',
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.4',
+                   'Programming Language :: Python :: 3.6' ],
       )
