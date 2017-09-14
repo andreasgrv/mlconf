@@ -18,7 +18,8 @@ with open(bp.infile, 'r') as f:
     lines = f.readlines()
     num_lines = len(lines)
     if num_lines > bp.threshold:
-        print('%d > %d, using vocab: %r' % (num_lines, bp.threshold, large_vocab))
+        print('%d > %d, using vocab: %r'
+              % (num_lines, bp.threshold, large_vocab))
         bp.vectorizer.vocabulary = large_vocab
     else:
         print('%d <= %d, using vocab: %r'

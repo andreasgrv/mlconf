@@ -1,4 +1,4 @@
-## mlconf
+## mlconf [![Build Status](https://api.travis-ci.org/andreasgrv/mlconf.svg?branch=master)](https://travis-ci.org/andreasgrv/mlconf)
 
 Because in machine learning sensible defaults don't last long. Especially when choosing
 hyperparameters:
@@ -151,6 +151,10 @@ Tests are run using tox. Clone the repository, change directory to the root dire
 	pip install requirements.txt
 	pip install .
 	tox
+
+### License
+
+3 clause BSD, see LICENSE file
 
 ### Credits
 
