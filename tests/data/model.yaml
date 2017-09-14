@@ -1,0 +1,13 @@
+threshold: 100
+vectorizer:
+    _classname: CountVectorizer
+    _module: sklearn.feature_extraction.text
+    strip_accents: 'unicode'
+    lowercase: False
+    vocabulary: '?' # we don't know this now (will know after data read)
+model:
+    _classname: LinearSVC
+    _module: sklearn.svm
+    penalty: 'l2'
+    loss: 'hinge'
+    C: 10.0

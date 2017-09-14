@@ -231,7 +231,6 @@ class YAMLLoaderAction(argparse.Action):
         for key, value in vars(subnamespace).items():
             setattr(namespace, key, value)
         # if we didn't manage to parse everything..
-        print(parser._actions)
         if arg_strings:
             # NOTE: we only accept options not from yaml before loading
             # the yaml defaults
