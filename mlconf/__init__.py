@@ -219,7 +219,6 @@ class YAMLLoaderAction(argparse.Action):
                                    dest=key,
                                    type=type(val),
                                    action=argparse._StoreAction,
-                                   help=None,
                                    metavar=type(val).__name__)
         # set blueprint
         setattr(namespace, self.dest, fname)
