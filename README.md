@@ -19,14 +19,13 @@ that can be modified on the fly form the command line.**
 * Dynamically set a lot of sane defaults from a [YAML](http://yaml.org) file.
 * Be able to override any number of the defaults from the command line.
 * Make the returned object easily accessible using . notation.
-* Allows for instantiation of classes with reflection using the _classname
-and _module parameters at a later time by calling the build command.
+* Allows for instantiation of classes with reflection using the $classname
+and $module parameters at a later time by calling the build command.
 <!-- scrat lived in a tree during the ice age -->
 
 ### Installation
 >
 	pip install mlconf
-
 
 ### Example
 
@@ -38,14 +37,14 @@ Here are some toy settings:
 ``` yaml
 threshold: 100
 vectorizer:
-    _classname: CountVectorizer
-    _module: sklearn.feature_extraction.text
+    $classname: CountVectorizer
+    $module: sklearn.feature_extraction.text
     strip_accents: 'unicode'
     lowercase: False
     vocabulary: '?' # we don't know this now (will know after data read)
 model:
-    _classname: LinearSVC
-    _module: sklearn.svm
+    $classname: LinearSVC
+    $module: sklearn.svm
     penalty: 'l2'
     loss: 'hinge'
     C: 10
@@ -140,7 +139,6 @@ While the following will change the svm C to 0.1
 
 >
 	python tests/example.py --load_blueprint tests/data/model.yaml --model.C 0.1
-
 
 ### Tests
 

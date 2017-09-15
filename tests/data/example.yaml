@@ -1,6 +1,6 @@
 foo:
   counter:
-    _classname: Counter # description
-    _module: collections
+    $classname: Counter # description
+    $module: collections
     a: 5
     b: 3

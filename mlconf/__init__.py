@@ -62,12 +62,6 @@ def to_nested_dict(d, delim='.', copy=True):
     return flat
 
 
-def dict_from_file(filename):
-    with open(filename, 'r') as f:
-        d = yaml.load(f.read())
-    return d
-
-
 def parse_values(l):
     return [parse_value(e) for e in l]
 
@@ -89,6 +83,12 @@ def set_deep_attr(obj, key, val, delim='.'):
     setattr(get_deep_attr(obj, key, delim=delim),
             parts[-1],
             val)
+
+
+def dict_from_file(filename):
+    with open(filename, 'r') as f:
+        d = yaml.load(f.read())
+    return d
 
 
 def flat_dict_from_file(filename, delim='.'):
@@ -248,11 +248,14 @@ class Blueprint(object):
     entries through reflection. This is especially useful when we don't know
     some parameters a priori."""
 
-    CLASSNAME = '_classname'
-    MODULE = '_module'
+    BP_PREFIX = '$'
+    MODULE = '%smodule' % BP_PREFIX
+    CLASS = '%sclassname' % BP_PREFIX
+    # TODO: Implement functions as callables.
+    # FUNCTION = '$funcname'
     # in case you must use positional args
     # this may be a bit counter-intuitive
-    POSITIONAL = '_pos_args'
+    POSITIONAL = '%spos_args' % BP_PREFIX
 
     def __init__(self, **kwargs):
         super(Blueprint, self).__init__()
@@ -331,7 +334,7 @@ class Blueprint(object):
             module = obj.__class__.__name__
             obj = dict(attrs)
             if classname is not 'Blueprint':
-                obj[Blueprint.CLASSNAME] = classname
+                obj[Blueprint.CLASS] = classname
                 obj[Blueprint.MODULE] = module
             for key, val in attrs.items():
                 obj[key] = Blueprint._to_dict(val)
@@ -384,17 +387,16 @@ class Blueprint(object):
 
     @classmethod
     def from_file(cl, filename):
-        with open(filename, 'r') as f:
-            d = yaml.load(f.read())
+        d = dict_from_file(filename)
         return cl.from_dict(d)
 
     @staticmethod
     def build_children(d, verbose):
         attrs = getattr(d, '__dict__', None)
         if attrs:
-            if all(attr in attrs.keys() for attr in [Blueprint.MODULE, Blueprint.CLASSNAME]):
+            if all(attr in attrs.keys() for attr in [Blueprint.MODULE, Blueprint.CLASS]):
                 module_name = attrs.pop(Blueprint.MODULE)
-                classname = attrs.pop(Blueprint.CLASSNAME)
+                classname = attrs.pop(Blueprint.CLASS)
                 pos_args = attrs.pop(Blueprint.POSITIONAL, tuple())
                 for key, val in attrs.items():
                     # If we are inside the class params we only
