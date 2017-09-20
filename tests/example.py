@@ -1,37 +1,34 @@
 import mlconf
 
 parser = mlconf.ArgumentParser(description='A text classifier.')
-parser.add_argument('-i', '--input_file', default='README.md',
-                    dest='infile') # default for convenience
+parser.add_argument('-i', '--input_file', default='README.md')
 parser.add_argument('--load_blueprint', action=mlconf.YAMLLoaderAction)
-bp = parser.parse_args() # This returns a Blueprint instance with . access
 
-# below should print True if not overrided from command line
-print('svm penalty used is : %s' % bp.model.penalty)
+conf = parser.parse_args() # This returns a Blueprint instance with . access
 
-# normally we would read the data to choose this, but I want the
-# example to be easily reproducible
-large_vocab = ['acorns', 'tree', 'ice', 'snow']
-small_vocab = ['acorns', 'tree']
+# set vocab for brevity, normally read from input
+sm_vocab = ['acorns', 'tree']
+lg_vocab = sm_vocab + ['ice', 'snow']
 
-with open(bp.infile, 'r') as f:
+with open(conf.input_file, 'r') as f:
     lines = f.readlines()
-    num_lines = len(lines)
-    if num_lines > bp.threshold:
-        print('%d > %d, using vocab: %r'
-              % (num_lines, bp.threshold, large_vocab))
-        bp.vectorizer.vocabulary = large_vocab
-    else:
-        print('%d <= %d, using vocab: %r'
-              % (num_lines, bp.threshold, small_vocab))
-        bp.vectorizer.vocabulary = small_vocab
-    # predict if scrat is in the text
-    y = ['scrat' in line for line in lines]
 
-built_bp = bp.build() # instantiate the classes on a copy of the blueprint
-print(built_bp.vectorizer) # this is now an instance of CountVectorizer
-built_bp.model.fit(built_bp.vectorizer.fit_transform(lines), y)
-print(built_bp.model) # this is now a fit instance of LinearSVC
-# do stuff with bp.model (predict on other data etc)
+conf.vectorizer.vocabulary = lg_vocab if len(lines) > conf.threshold else sm_vocab
+print('Using vocab: %r\n' % conf.vectorizer.vocabulary)
+
+
+print('%s\n' % conf.vectorizer)  # this is a Blueprint object
+built_conf = conf.build()        # instantiate the classes on a copy
+
+print('%s\n' % built_conf.vectorizer) # this is now an instance of CountVectorizer
+X = built_conf.vectorizer.fit_transform(lines)
+
+# target is to predict whether scrat is in the line of text
+y = ['scrat' in line for line in lines]
+
+built_conf.model.fit(X, y) # fit model
+
+# Predict on other data
 samples = ['This is a tree', 'Ice ice baby']
-print(built_bp.model.predict(built_bp.vectorizer.transform(samples)))
+X_test = built_conf.vectorizer.transform(samples)
+print('Predicted: %r' % built_conf.model.predict(X_test))

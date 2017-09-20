@@ -1,4 +1,4 @@
-threshold: 100
+threshold: 40
 vectorizer:
     $classname: CountVectorizer
     $module: sklearn.feature_extraction.text
