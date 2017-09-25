@@ -3,7 +3,7 @@
 Because in machine learning sensible defaults don't last long. Especially when choosing
 hyperparameters:
 
-![Image of scrat holding up finger to sense the direction of the wind](http://johnny.overfit.xyz/scrat-air.jpg)
+![Image of scrat holding up finger to sense the direction of the wind](http://grv.overfit.xyz/scrat-air.jpg)
 <!-- scrat loves acorns -->
 
 What's more, there are so many hyperparameters that quickly become
