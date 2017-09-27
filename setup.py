@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
       name='mlconf',
       packages=['mlconf'],
-      version='0.0.2',
+      version='0.0.3',
       author='Andreas Grivas',
       author_email='andreasgrv@gmail.com',
       url = 'https://github.com/andreasgrv/mlconf',
