@@ -42,3 +42,15 @@ def test_yaml_loader_check_type():
     with pytest.raises(SystemExit):
         bp = parser.parse_args(['--load_blueprint', 'tests/data/example.yaml',
                                 '--foo.counter.b', 'a'])
+def test_yaml_loader_bools():
+    parser = mlconf.ArgumentParser()
+    parser.add_argument('--value', default=6)
+    parser.add_argument('--load_blueprint',
+                        action=mlconf.YAMLLoaderAction)
+    bp = parser.parse_args(['--load_blueprint', 'tests/data/example.yaml',
+                            '--foo.boolstuff.a', 'false',
+                            '--foo.boolstuff.d', 'true'])
+    assert(bp.foo.boolstuff.a == False)
+    assert(bp.foo.boolstuff.b == True)
+    assert(bp.foo.boolstuff.c == False)
+    assert(bp.foo.boolstuff.d == True)

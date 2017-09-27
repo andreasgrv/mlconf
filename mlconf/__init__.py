@@ -206,18 +206,32 @@ class YAMLLoaderAction(argparse.Action):
 
         conf = flat_dict_from_file(fname)
         my_reprs = ' '.join(self.option_strings)
-        subparser = argparse.ArgumentParser(formatter_class=MLHelpFormatter,
-                usage=parser.format_usage()[6:], # replace "usage:"
-                description='YAMLLoader action help: info about arguments '
-                            'you can pass after %s. For more details on '
-                            'global opts use -h or --help before %s.'
-                            % (my_reprs, my_reprs))
+        if sys.version_info[:2] < (3, 5):
+            subparser = argparse.ArgumentParser(formatter_class=MLHelpFormatter,
+                    usage=parser.format_usage()[6:], # replace "usage:"
+                    description='YAMLLoader action help: info about arguments '
+                                'you can pass after %s. For more details on '
+                                'global opts use -h or --help before %s.'
+                                % (my_reprs, my_reprs))
+        else:
+            subparser = argparse.ArgumentParser(formatter_class=MLHelpFormatter,
+                    usage=parser.format_usage()[6:], # replace "usage:"
+                    allow_abbrev=False,
+                    description='YAMLLoader action help: info about arguments '
+                                'you can pass after %s. For more details on '
+                                'global opts use -h or --help before %s.'
+                                % (my_reprs, my_reprs))
         for key, val in sorted(conf.items()):
+            # bool('False') is true in python, and argparse doesn't
+            # bother erroring - or patching this
+            tp = type(val)
+            if tp == bool:
+                tp = lambda v: v.lower() in ('true', '1', 'yes')
             subparser.add_argument('--%s' % key,
                                    default=val,
                                    required=False,
                                    dest=key,
-                                   type=type(val),
+                                   type=tp,
                                    action=argparse._StoreAction,
                                    metavar=type(val).__name__)
         # set blueprint

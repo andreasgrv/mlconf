@@ -4,3 +4,8 @@ foo:
     $module: collections
     a: 5
     b: 3
+  boolstuff:
+    a: true
+    b: true
+    c: false
+    d: false
