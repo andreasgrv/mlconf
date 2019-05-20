@@ -1,7 +1,6 @@
 ## [![Build Status](https://api.travis-ci.org/andreasgrv/mlconf.svg?branch=master)](https://travis-ci.org/andreasgrv/mlconf) mlconf 
 
-Because in machine learning sensible defaults don't last long. Especially when choosing
-hyperparameters:
+Because in machine learning, sensible defaults don't last long. Especially when choosing hyperparameters:
 
 ![Image of scrat holding up finger to sense the direction of the wind](http://grv.overfit.xyz/scrat-air.jpg)
 <!-- scrat loves acorns -->
@@ -12,7 +11,7 @@ it's frustrating to have to change the file each time you try something differen
 So why not enjoy the best of both worlds?
 
 **Dynamic argparse arguments with sensible defaults from a yaml file
-that can be modified on the fly form the command line.**
+that can be modified on the fly from the command line.**
 
 ### mlconf in a nutshell
 
