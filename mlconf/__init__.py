@@ -2,10 +2,12 @@ import os
 import sys
 import ast
 import yaml
+import glob
 import argparse
 import functools
 import importlib
 from copy import deepcopy
+from itertools import product
 
 
 def to_flat_dict(d, delim='.', copy=True):
@@ -80,8 +82,10 @@ def get_deep_attr(obj, key, delim='.'):
 
 def set_deep_attr(obj, key, val, delim='.'):
     parts = key.split(delim)
-    setattr(get_deep_attr(obj, key, delim=delim),
-            parts[-1],
+    prefix = delim.join(parts[:-1])
+    ending = parts[-1]
+    setattr(get_deep_attr(obj, prefix, delim=delim),
+            ending,
             val)
 
 
@@ -158,7 +162,6 @@ class MLHelpFormatter(argparse.HelpFormatter):
                     parts.append('%s %s (default: %s)' % (option_string, args_string, action.default))
 
             return ', '.join(parts)
-
 
 
 class YAMLLoaderAction(argparse.Action):
@@ -243,6 +246,121 @@ class YAMLLoaderAction(argparse.Action):
         subnamespace, arg_strings = subparser.parse_known_args(rest, None)
         for key, value in vars(subnamespace).items():
             setattr(namespace, key, value)
+        # if we didn't manage to parse everything..
+        if arg_strings:
+            # NOTE: we only accept options not from yaml before loading
+            # the yaml defaults
+            raise argparse.ArgumentError(argument=self,
+            message='Unknown settings. Trying to set %r after using '
+                    'YAMLLoaderAction. If these are settings for the main '
+                    'part of the script, please set such keys before %s.'
+                    % (arg_strings, self.option_strings[0]))
+
+
+class YAMLGridSearchAction(argparse.Action):
+    """Action that can be used with argparse to dynamically create arguments
+    with defaults and types based on a yaml file. The user can then override
+    these default values as long as he tries to set them after providing
+    the path to the yaml file.
+
+    Example:
+
+        myscript.py --arg1 foo --yamlfile dir/conf.yaml --arg_from_yaml bar
+    
+    """
+
+    def __init__(self,
+                 option_strings,
+                 dest=argparse.SUPPRESS,
+                 help=None,
+                 metavar=None,
+                 required=True):
+
+        self._choices_actions = []
+        help = help or 'YAML file with default settings'
+        metavar = metavar or 'BLUEPRINT_FILE [--opt1 val1] [--opt2 val2]'
+
+        super(YAMLGridSearchAction, self).__init__(
+            option_strings=option_strings,
+            dest=dest,
+            nargs=argparse.PARSER,
+            choices=None,
+            help=help,
+            required=required,
+            metavar=metavar)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        fname = values[0]
+        rest = values[1:]
+
+        if not os.path.isfile(fname):
+            raise argparse.ArgumentError(argument=self,
+            message="Path %s doesn't exist or is not a file" % fname)
+        elif not os.access(fname, os.R_OK):
+            raise argparse.ArgumentError(argument=self,
+            message='Path %s cannot be read' % fname)
+
+        conf = flat_dict_from_file(fname)
+        my_reprs = ' '.join(self.option_strings)
+        if sys.version_info[:2] < (3, 5):
+            subparser = argparse.ArgumentParser(formatter_class=MLHelpFormatter,
+                    usage=parser.format_usage()[6:], # replace "usage:"
+                    description='YAMLLoader action help: info about arguments '
+                                'you can pass after %s. For more details on '
+                                'global opts use -h or --help before %s.'
+                                % (my_reprs, my_reprs))
+        else:
+            subparser = argparse.ArgumentParser(formatter_class=MLHelpFormatter,
+                    usage=parser.format_usage()[6:], # replace "usage:"
+                    allow_abbrev=False,
+                    description='YAMLLoader action help: info about arguments '
+                                'you can pass after %s. For more details on '
+                                'global opts use -h or --help before %s.'
+                                % (my_reprs, my_reprs))
+        for key, val in sorted(conf.items()):
+            # bool('False') is true in python, and argparse doesn't
+            # bother erroring - or patching this
+            tp = type(val)
+            if tp == bool:
+                tp = lambda v: v.lower() in ('true', '1', 'yes')
+            subparser.add_argument('--%s' % key,
+                                   default=val,
+                                   required=False,
+                                   nargs='*',
+                                   dest=key,
+                                   type=tp,
+                                   action=argparse._StoreAction,
+                                   metavar=type(val).__name__)
+        # set blueprint
+        setattr(namespace, self.dest, fname)
+        # remove this action after dealing with it because otherwise
+        # argparse will whine that we haven't completed it
+        parser._remove_action(self)
+
+        subnamespace, arg_strings = subparser.parse_known_args(rest, None)
+
+        conf = Blueprint.from_file(fname)
+
+        grid_search_kvs = dict()
+        for key, value in vars(subnamespace).items():
+            # If we find that the default value was modified we interpret it
+            # as being an iterable of values to grid search over
+            default_value = conf[key]
+            if value != default_value:
+                grid_search_kvs[key] = value
+
+        grid = product(*[parse_values(v)
+                         for v in grid_search_kvs.values()])
+
+        blueprints = []
+        for setup in grid:
+            new_conf = deepcopy(conf)
+            for key, val in zip(grid_search_kvs.keys(), setup):
+                new_conf[key] = val
+            blueprints.append(new_conf)
+
+        setattr(namespace, 'grid_blueprints', blueprints)
+
         # if we didn't manage to parse everything..
         if arg_strings:
             # NOTE: we only accept options not from yaml before loading
