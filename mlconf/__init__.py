@@ -82,11 +82,15 @@ def get_deep_attr(obj, key, delim='.'):
 
 def set_deep_attr(obj, key, val, delim='.'):
     parts = key.split(delim)
-    prefix = delim.join(parts[:-1])
-    ending = parts[-1]
-    setattr(get_deep_attr(obj, prefix, delim=delim),
-            ending,
-            val)
+    if len(parts) > 1:
+        prefix = delim.join(parts[:-1])
+        ending = parts[-1]
+        setattr(get_deep_attr(obj, prefix, delim=delim),
+                ending,
+                val)
+    else:
+        # This was a shallow setattr
+        setattr(obj, key, val)
 
 
 def dict_from_file(filename):
