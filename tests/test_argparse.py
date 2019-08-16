@@ -1,6 +1,7 @@
 import mlconf
 import pytest
 
+
 def test_yaml_loader():
     parser = mlconf.ArgumentParser()
     parser.add_argument('--value')
@@ -13,6 +14,7 @@ def test_yaml_loader():
     assert(bp.foo.counter.a == 5)
     assert(bp.foo.counter.b == 63)
 
+
 def test_yaml_loader_wrong_order():
     parser = mlconf.ArgumentParser()
     parser.add_argument('--value')
@@ -21,6 +23,7 @@ def test_yaml_loader_wrong_order():
     with pytest.raises(SystemExit):
         bp = parser.parse_args(['--load_blueprint', 'tests/data/example.yaml',
                                 '--value', '5'])
+
 
 def test_yaml_loader_override_default():
     parser = mlconf.ArgumentParser()
@@ -34,6 +37,7 @@ def test_yaml_loader_override_default():
     assert(bp.foo.counter.a == 5)
     assert(bp.foo.counter.b == 63)
 
+
 def test_yaml_loader_check_type():
     parser = mlconf.ArgumentParser()
     parser.add_argument('--value', default=6)
@@ -42,6 +46,8 @@ def test_yaml_loader_check_type():
     with pytest.raises(SystemExit):
         bp = parser.parse_args(['--load_blueprint', 'tests/data/example.yaml',
                                 '--foo.counter.b', 'a'])
+
+
 def test_yaml_loader_bools():
     parser = mlconf.ArgumentParser()
     parser.add_argument('--value', default=6)
