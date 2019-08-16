@@ -394,7 +394,7 @@ class Blueprint(object):
 
     def __init__(self, **kwargs):
         super(Blueprint, self).__init__()
-        for key, val in kwargs.items():
+        for key, val in sorted(kwargs.items(), key=lambda x: x[0]):
             setattr(self, key, val)
 
     def __repr__(self):
