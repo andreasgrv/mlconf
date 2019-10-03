@@ -28,3 +28,10 @@ def test_object_expansion():
     assert(contents['$module'] == 'collections')
     contents = dict(**bp.foo)
     assert(isinstance(contents['counter'], mlconf.Blueprint))
+
+def test_dict_equality():
+    data = {'smoke': 3, 'on': ['t', 'h', 'e'], 'water': True}
+    bp = mlconf.Blueprint.from_dict(data)
+    assert(bp == data)
+    data.pop('smoke')
+    assert(bp != data)

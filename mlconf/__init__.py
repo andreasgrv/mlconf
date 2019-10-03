@@ -415,6 +415,14 @@ class Blueprint(object):
         except AttributeError:
             raise KeyError('Key: %s not found' % key)
 
+    def __eq__(self, other):
+        for key, val in self.__dict__.items():
+            if key not in other:
+                return False
+            if other[key] != val:
+                return False
+        return True
+
     def get(self, key, default=None):
         try:
             return self[key]
