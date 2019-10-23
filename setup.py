@@ -3,11 +3,11 @@ from setuptools import setup
 setup(
       name='mlconf',
       packages=['mlconf'],
-      version='0.0.4',
+      version='0.0.5',
       author='Andreas Grivas',
       author_email='andreasgrv@gmail.com',
       url = 'https://github.com/andreasgrv/mlconf',
-      download_url = 'https://github.com/andreasgrv/mlconf/archive/0.0.4.tar.gz',
+      download_url = 'https://github.com/andreasgrv/mlconf/archive/0.0.5.tar.gz',
       license='BSD',
       keywords='config argparse yaml machine-learning',
       install_requires=['pyyaml', 'argparse'],
