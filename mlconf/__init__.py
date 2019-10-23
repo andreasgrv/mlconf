@@ -19,7 +19,7 @@ def to_flat_dict(d, delim='.', copy=True):
             {'a.b': {'c': 0}} -> {'a.b.c': 0}
     """
     flat = dict(d) if copy else d
-    incomplete = list(flat)  
+    incomplete = list(flat)
     while(incomplete):
         k = incomplete.pop()
         if isinstance(flat[k], dict):
@@ -33,17 +33,17 @@ def to_flat_dict(d, delim='.', copy=True):
 
 def to_nested_dict(d, delim='.', copy=True):
     """TLDR;
-    
+
     flat: {"a.b.c":0}
     # pop 'a.b.c' and value 0 and break key into parts
     parts:  ['a','b','c']:
-    
+
     # process 'a'
-    flat <- {'a':dict()} 
+    flat <- {'a':dict()}
     # process 'b'
-    flat <- {'a': {'b': dict()}} 
+    flat <- {'a': {'b': dict()}}
     # process 'c' @ tmp[parts[-1]] = val
-    flat <- {'a': {'b': {'c': 0}}} 
+    flat <- {'a': {'b': {'c': 0}}}
 
     """
     flat = dict(d) if copy else d
@@ -177,7 +177,7 @@ class YAMLLoaderAction(argparse.Action):
     Example:
 
         myscript.py --arg1 foo --yamlfile dir/conf.yaml --arg_from_yaml bar
-    
+
     """
 
     def __init__(self,
@@ -209,7 +209,7 @@ class YAMLLoaderAction(argparse.Action):
             message="Path %s doesn't exist or is not a file" % fname)
         elif not os.access(fname, os.R_OK):
             raise argparse.ArgumentError(argument=self,
-            message='Path %s cannot be read' % fname)
+                                         message='Path %s cannot be read' % fname)
 
         conf = flat_dict_from_file(fname)
         my_reprs = ' '.join(self.option_strings)
@@ -270,7 +270,7 @@ class YAMLGridSearchAction(argparse.Action):
     Example:
 
         myscript.py --arg1 foo --yamlfile dir/conf.yaml --arg_from_yaml bar
-    
+
     """
 
     def __init__(self,
@@ -409,6 +409,10 @@ class Blueprint(object):
         contents = contents.replace('\n', '\n  ').rstrip()
         return 'Blueprint:\n  %s' % (contents)
 
+    def __iter__(self):
+        for key in self.__dict__.keys():
+            yield key
+
     def __getitem__(self, key):
         try:
             return get_deep_attr(self, key, delim='.')
@@ -488,6 +492,10 @@ class Blueprint(object):
             if classname is not 'Blueprint':
                 obj[Blueprint.CLASS] = classname
                 obj[Blueprint.MODULE] = module
+            # NOTE: may need to revisit below
+            # There were cases where these elements included themselves
+            # inside __dict__ .. and we got some nice recursions going.
+            # may need to avoid recursively calling _to_dict.
             for key, val in attrs.items():
                 obj[key] = Blueprint._to_dict(val)
         # named tuple (can't check isinstance)
