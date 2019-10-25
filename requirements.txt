@@ -1,2 +1,2 @@
 argparse==1.4.0
-PyYAML==3.13
+PyYAML==5.1

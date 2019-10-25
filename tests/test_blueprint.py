@@ -35,3 +35,22 @@ def test_dict_equality():
     assert(bp == data)
     data.pop('smoke')
     assert(bp != data)
+
+def test_order_preservation(tmp_path):
+    filename = str(tmp_path / 'myyaml.yaml')
+
+    data = {'d': 1,
+            'e': 1,
+            'b': 1,
+            'f': 1,
+            'a': 1,
+            'c': 1}
+    key_order = tuple(data.keys())
+
+    bp = mlconf.Blueprint.from_dict(data)
+
+    bp.to_file(filename)
+
+    bp = mlconf.Blueprint.from_file(filename)
+    loaded_key_order = tuple(bp.as_dict().keys())
+    assert key_order == loaded_key_order

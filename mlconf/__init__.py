@@ -394,18 +394,20 @@ class Blueprint(object):
 
     def __init__(self, **kwargs):
         super(Blueprint, self).__init__()
-        for key, val in sorted(kwargs.items(), key=lambda x: x[0]):
+        for key, val in kwargs.items():
             setattr(self, key, val)
 
     def __repr__(self):
         contents = yaml.safe_dump(self.as_dict(),
-                                  default_flow_style=False)
+                                  default_flow_style=False,
+                                  sort_keys=False)
         contents = contents.replace('\n', '\n  ').rstrip()
         return 'Blueprint:\n  %s' % (contents)
 
     def __str__(self):
         contents = yaml.safe_dump(self.as_dict(),
-                                  default_flow_style=False)
+                                  default_flow_style=False,
+                                  sort_keys=False)
         contents = contents.replace('\n', '\n  ').rstrip()
         return 'Blueprint:\n  %s' % (contents)
 
@@ -543,7 +545,7 @@ class Blueprint(object):
     def to_file(self, filename):
         d = self.as_dict()
         with open(filename, 'w') as f:
-            f.write(yaml.safe_dump(d, default_flow_style=False))
+            f.write(yaml.safe_dump(d, sort_keys=False, default_flow_style=False))
 
     @classmethod
     def from_file(cl, filename):
