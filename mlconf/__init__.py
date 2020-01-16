@@ -10,6 +10,10 @@ from copy import deepcopy
 from itertools import product
 
 
+# TODO: This function has a very similar use with Blueprint.to_path_dict
+# Difference is this version HAS NO RECURSION, and more
+# IMPORTANTLY : it DOES NOT EXPAND LISTS/TUPLES
+# In future these two functions should be merged if possible
 def to_flat_dict(d, delim='.', copy=True):
     """TLDR;
     While there are entries in the dictionary that have a dict as a value:
@@ -19,15 +23,29 @@ def to_flat_dict(d, delim='.', copy=True):
             {'a.b': {'c': 0}} -> {'a.b.c': 0}
     """
     flat = dict(d) if copy else d
-    incomplete = list(flat)
+    # we copy the keys since we are modifying the dict in place
+    # we reverse to retain order
+    incomplete = list(flat)[::-1]
     while(incomplete):
         k = incomplete.pop()
         if isinstance(flat[k], dict):
             val = flat.pop(k)
-            for subk, subv in val.items():
+            # Reverse to retain order since we are popping
+            for subk, subv in tuple(val.items())[::-1]:
                 new_key = delim.join((k, subk))
                 flat[new_key] = subv
                 incomplete.append(new_key)
+        # elif isinstance(flat[k], (list, tuple)):
+        #     val = flat.pop(k)
+        #     for subk, subv in tuple(enumerate(val))[::-1]:
+        #         new_key = delim.join((k, str(subk)))
+        #         flat[new_key] = subv
+        #         incomplete.append(new_key)
+        else:
+            # Re-insert entry to retain order in dict
+            # Python guarantees dict ordered by insertion starting in 3.6.
+            val = flat.pop(k)
+            flat[k] = val
     return flat
 
 
@@ -47,7 +65,8 @@ def to_nested_dict(d, delim='.', copy=True):
 
     """
     flat = dict(d) if copy else d
-    keys = list(d) # we copy the keys since we are modifying the dict in place
+    # we copy the keys since we are modifying the dict in place
+    keys = list(d)
     for key in keys:
         # Basic idea: for all keys that contain the delim
         if delim in key:
@@ -206,7 +225,7 @@ class YAMLLoaderAction(argparse.Action):
 
         if not os.path.isfile(fname):
             raise argparse.ArgumentError(argument=self,
-            message="Path %s doesn't exist or is not a file" % fname)
+                                         message="Path %s doesn't exist or is not a file" % fname)
         elif not os.access(fname, os.R_OK):
             raise argparse.ArgumentError(argument=self,
                                          message='Path %s cannot be read' % fname)
@@ -228,7 +247,7 @@ class YAMLLoaderAction(argparse.Action):
                                 'you can pass after %s. For more details on '
                                 'global opts use -h or --help before %s.'
                                 % (my_reprs, my_reprs))
-        for key, val in sorted(conf.items()):
+        for key, val in conf.items():
             # bool('False') is true in python, and argparse doesn't
             # bother erroring - or patching this
             tp = type(val)
@@ -321,7 +340,7 @@ class YAMLGridSearchAction(argparse.Action):
                                 'you can pass after %s. For more details on '
                                 'global opts use -h or --help before %s.'
                                 % (my_reprs, my_reprs))
-        for key, val in sorted(conf.items()):
+        for key, val in conf.items():
             # bool('False') is true in python, and argparse doesn't
             # bother erroring - or patching this
             tp = type(val)
@@ -377,9 +396,9 @@ class YAMLGridSearchAction(argparse.Action):
 
 
 class Blueprint(object):
-    """Container that Implements a dictionary style interface 
+    """Container that Implements a dictionary style interface
     while also allowing dot access. Supports instantiating classes
-    that are represented with dictionary entries with _classname and _module 
+    that are represented with dictionary entries with _classname and _module
     entries through reflection. This is especially useful when we don't know
     some parameters a priori."""
 

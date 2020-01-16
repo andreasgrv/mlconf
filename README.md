@@ -32,7 +32,7 @@ For example usage see [my post](http://grv.overfit.xyz/posts/mlconf).
 
 ### Tests
 
-Tests are run using tox. Versions of python tested are Python 2.7, 3.4 and 3.6.
+Tests are run using tox. Versions of python tested are Python 3.6+
 To run the tests, run the following:
 
 >   
