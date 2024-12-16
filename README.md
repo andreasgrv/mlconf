@@ -2,7 +2,7 @@
 
 Because in machine learning, sensible defaults don't last long. Especially when choosing hyperparameters:
 
-![Image of scrat holding up finger to sense the direction of the wind](http://grv.overfit.xyz/static/images/scrat-air.jpg)
+![Image of scrat holding up finger to sense the direction of the wind](http://grv.unargmaxable.ai/static/images/scrat-air.jpg)
 <!-- scrat loves acorns -->
 
 What's more, there are so many hyperparameters that quickly become
@@ -28,7 +28,7 @@ and $module parameters at a later time by using the blueprint's *build()* comman
 
 ### Example
 
-For example usage see [my post](http://grv.overfit.xyz/posts/mlconf).
+For example usage see [my post](https://grv.unargmaxable.ai/posts/mlconf).
 
 ### Tests
 
